@@ -1,0 +1,64 @@
+{% load staticfiles %}
+
+{% load review_tags %}
+
+<li class="list-group-item mt-1 border border-top-0 border-right-0 border-left-0">
+    <div class="review-{{ review.id }}">
+        <div class="user-info m-auto text-muted">
+            <img class="user-avatar-nav rounded" src="{{ review.user.avatar.url }}" alt="avatar">
+            <a href="{{ review.user.get_absolute_url }}">
+                <span class="ml-1 mr-2 mt">{{ review.user }}</span>
+            </a>
+            <span class="">{{ review.created }}</span>
+        </div>
+        <div class="review-info">
+            <div class="review-content ml-4 mt-1">
+                <span class="text-muted">
+                    {{ review.content }}
+                </span>
+            </div>
+            <div class="review-meta mt-1 ml-4">
+                <span class="text-muted">
+                    {% if request.user.is_authenticated %}
+                        {% check_is_like_review review.id request.user as is_like_review %}
+                        {% if is_like_review %}
+                            <a href="javascript:void(0)"
+                               data-rid="{{ review.id }}"
+                               data-ctg="review"
+                               data-action="unlike"
+                               class="card-link badge badge-light text-danger like-review">
+                                <span class="like-thumbs">
+                                    <i class="fa fa-thumbs-up" aria-hidden="true"></i>
+                                </span>
+                                <span class="like-count">
+                                    {{ review.like_count }}
+                                </span>
+                            </a>
+                        {% else %}
+                            <a href="javascript:void(0)"
+                               data-rid="{{ review.id }}"
+                               data-ctg="review"
+                               data-action="like"
+                               class="card-link badge badge-light text-muted like-review">
+                                <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                                <span class="like-count">
+                                    {{ review.like_count }}
+                                </span>
+                            </a>
+                        {% endif %}
+                    {% endif %}
+
+                    <a target="_blank" href="{{ review.get_absolute_url }}" class="card-link badge badge-light text-muted">
+                        <i class="fa fa-comment-o" aria-hidden="true"></i>
+                        {% if review.get_reply_count %}
+                            {{ review.get_reply_count }} 条回复
+                        {% else %}
+                            回复
+                        {% endif %}
+                    </a>
+                </span>
+            </div>
+
+        </div>
+    </div>
+</li>

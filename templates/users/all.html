@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    全部用户
+{% endblock %}
+
+
+{% block content %}
+    <h6 class="border-bottom border-gray pb-2">全部用户({{ users.count }})</h6>
+    {% include 'users/list.html' with users=users %}
+{% endblock %}

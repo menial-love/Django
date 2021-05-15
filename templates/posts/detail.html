@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+
+{% load post_tags %}
+
+{% block title %}
+    帖子详情
+{% endblock %}
+
+
+{% block content %}
+    <div class="row mb-5">
+        <div class="col-md-10 offset-md-1">
+            <div class="post-title">
+                <h4>
+                    {{ post.title }}
+                </h4>
+            </div>
+            <div class="post-meta mt-3">
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="media text-muted m-auto">
+                            <a href="#">
+                                <img src="{{ post.user.avatar.url }}" alt="" class="user-avatar-post mr-2 mt-1 rounded">
+                            </a>
+                            <div class="media-body small lh-125 ">
+                                <div class="m-auto">
+                                    <a href="{{ post.user.get_absolute_url }}">
+                                        <strong class="card-link">{{ post.user }}</strong>
+                                    </a>
+                                </div>
+                                <span class="card-link">
+                                    发布于 {{ post.created }}
+                                </span>
+                                <span class="card-link">
+                                    浏览 {{ post.view_count }}
+                                </span>
+                                <span class="card-link">
+                                    评论 {{ post.get_review_count }}
+                                </span>
+                                 <span class="card-link">
+                                    点赞 <span class="like-count-text">{{ post.like_count }}</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% if request.user.is_authenticated %}
+                        <div class="col-md-2">
+                            <!--自定义标签，后两个为传递参数-->
+                        {% check_is_like_post post.id request.user as is_like %}
+                            {% if is_like %}
+                                <button class="btn btn-sm btn-outline-danger float-right" id="like-post" data-pid="{{ post.id }}" data-action="unlike">
+                                    <span class="like-thumbs"><i class="fa fa-thumbs-up" aria-hidden="true"></i></span>
+                                    <span class="like-text">已点赞</span>
+                                    <span class="like-count">{{ post.like_count }}</span>
+                                </button>
+                            {% else %}
+                                 <button class="btn btn-sm btn-outline-secondary float-right" id="like-post" data-pid="{{ post.id }}" data-action="like">
+                                    <span class="like-thumbs"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></span>
+                                    <span class="like-text">点赞</span>
+                                    <span class="like-count">{{ post.like_count }}</span>
+                                </button>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+            <div class="post-info mt-3">
+                <span class="d-flex" style="font-size:20px">
+                    {{ post.content }}
+                </span>
+            </div>
+            <div class="row">
+                {% if photos %}
+                    {% for photo in photos %}
+                    <div class="col-4 mt-2">
+                        <img src="{{ photo.absolute_url }}" width="240px" height="240px" />
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="post-meta mt-3">
+                {% if post.topic %}
+                    <a href="{{ post.topic.get_absolute_url }}" class="text-red card-link badge badge-light">{{ post.topic }}</a>
+                {% endif %}
+
+                {% if post.topic %}
+                    <a target="_blank" href="{{ post.src_url }}" class="text-red card-link badge badge-light">原文链接</a>
+                {% endif %}
+
+
+            </div>
+
+            <div class="review-form mt-3">
+                <div class="form-group">
+                    <label for="review" class="text-muted">
+                    </label>
+                    <textarea class="form-control bg-light" placeholder="写下你的评论..." rows="3" id="review-text"></textarea>
+                </div>
+
+
+                {% if request.user.is_authenticated %}
+                    <div class="mt-2">
+                         <button data-pid="{{ post.id }}"
+                                 class="btn btn-sm btn-outline-success float-right"
+                                 id="btn-review">
+                             发表评论
+                         </button>
+                    </div>
+                {% else %}
+                    <div class="mt-2">
+                         <a role="button" target="_blank" href="{% url 'users:user-login' %}" class="btn btn-sm btn-outline-success float-right">
+                             登录后回复
+                         </a>
+                     </div>
+                {% endif %}
+            </div>
+            <h6 class="border-bottom border-gray pb-2 mt-5">
+                <strong>
+                    <span class="review-count">
+                        {{ post.get_review_count }} 条评论
+                    </span>
+                </strong>
+            </h6>
+            <div class="review-list" id="reviews">
+                {% include 'reviews/review-list.html' with reviews=reviews %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block js %}
+    <script type="text/javascript">
+        $('button#like-post').click(function () {
+            var $this = $(this);
+            var postId = $this.data('pid');
+            var action = $this.data('action');
+            var likeCount = parseInt($this.find('span.like-count').text());
+            var data = {
+                'postId': postId,
+                'action': action
+            };
+            $.ajax({
+                cache: false,
+                type: 'POST',
+                url: '/post/like/',
+                data: data,
+                async: true,
+                success: function (response) {
+                    if (response.msg === 'ok'){
+                        $this.data('action', action === 'like' ? 'unlike' : 'like');
+                        if (action === 'like'){
+                            $this.removeClass('btn-outline-secondary');
+                            $this.addClass('btn-outline-danger');
+                            $this.find('span.like-thumbs').html('<i class="fa fa-thumbs-up" aria-hidden="true"></i>');
+                            $this.find('span.like-text').text('已点赞');
+                            $this.find('span.like-count').text(likeCount + 1);
+                            tips('+1', 'success');
+                        } else {
+                            $this.removeClass('btn-outline-danger');
+                            $this.addClass('btn-outline-secondary');
+                            $this.find('span.like-thumbs').html('<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>');
+                            $this.find('span.like-text').text('点赞');
+                            $this.find('span.like-count').text(likeCount - 1);
+                        }
+                        $('span.like-count-text').text($this.find('span.like-count').text());
+                    }
+                }
+            });
+        });
+        $('button#btn-review').click(function () {
+            var $this = $(this);
+            var postId = $this.data('pid');
+            var replyText = $.trim($('textarea#review-text').val());
+
+            if (replyText === '') {
+                tips('回复内容不能为空~', 'danger');
+                return false;
+            }
+
+            var data = {
+              'postId': postId,
+              'text': replyText
+            };
+            $.ajax({
+                cache: false,
+                type: 'POST',
+                url: '/review/add/review/',
+                data: data,
+                async: true,
+                success: function (response) {
+                    if (response.msg === 'ok'){
+                        tips('评论成功~', 'success');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                        return true;
+                    } else {
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                        tips('评论失败, 请稍后重试', 'danger');
+                        return false;
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+{% block title %}
+    个人主页
+{% endblock %}
+
+{% block content %}
+    <div class="row mb-5">
+        <div class="col-md-9">
+            <h6 class="border-bottom border-gray pb-2">帖子({{ posts.count }})</h6>
+            <div class="user-post-list">
+                {% include 'posts/list-home.html' with posts=posts %}
+            </div>
+
+            <h6 class="border-bottom border-gray pb-2 mt-4">评论({{ reviews.count }})</h6>
+            <div class="user-post-list">
+                {% include 'reviews/review-list-home.html' with reviews=reviews %}
+            </div>
+
+
+        </div>
+        <div class="col-md-3">
+            <h6 class="border-bottom border-gray pb-2">个人主页</h6>
+            <div class="user-info text-center">
+                <div class="mt-3">
+                    <img class="user-avatar-post rounded" src="{{ user.avatar.url }}" alt="">
+                </div>
+
+                <div class="mt-2">
+                    <span>{{ user }}</span>
+                </div>
+                <div class="mt-2">
+                    <span>{{ user.date_joined|timesince }}前加入</span>
+                </div>
+                <div class="mt-1">
+                    <span>{{ user.signature }}</span>
+                </div>
+            </div>
+
+            {% ifequal user request.user %}
+                <div class="mt-3">
+                    <a target="_blank" href="{% url 'users:edit-profile' user.id %}" class="btn btn-sm btn-outline-success btn-block">
+                        编辑资料
+                    </a>
+                </div>
+            {% endifequal %}
+
+
+        </div>
+    </div>
+{% endblock %}
+
+<!--对父模板中的js块进行重写-->
+{% block js %}
+
+{% endblock %}

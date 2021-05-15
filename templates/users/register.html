@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    注册
+{% endblock %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-4 offset-md-4 p-5">
+            <h5 class="mb-5 text-red">欢迎注册新用户</h5>
+            <label for="email">邮箱注册</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" >
+                    <i class="fa fa fa-envelope" aria-hidden="true"></i>
+                </span>
+              </div>
+              <input type="email" id="email" class="form-control" placeholder="邮箱">
+            </div>
+
+            <label for="password1">登录密码</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                    <i class="fa fa-lock" aria-hidden="true"></i>
+                </span>
+              </div>
+              <input type="password" id="password1" class="form-control" placeholder="密码" >
+            </div>
+
+            <label for="password2">确认密码</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                    <i class="fa fa-lock"  aria-hidden="true"></i>
+                </span>
+              </div>
+              <input type="password" id="password2" class="form-control" placeholder="密码" >
+            </div>
+
+            <button type="button" id="register" class="btn btn-outline-success btn-sm btn-block mt-5">
+                确认注册并前往登录
+            </button>
+        </div>
+
+    </div>
+{% endblock %}
+
+
+{% block js %}
+    <script type="text/javascript">
+        $('button#register').click(function () {
+
+            var email = $.trim($('input#email').val());
+            var password1 = $.trim($('input#password1').val());
+            var password2 = $.trim($('input#password2').val());
+
+            if (email === '' || password1 === '' || password2 === ''){
+                tips('邮箱、密码、确认密码都不能为空', 'danger');
+                return false;
+            }
+
+            var isEmail = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+            if (!(isEmail.test(email))){
+                tips('邮箱格式不正确~', 'danger');
+                return false;
+            }
+
+
+            var data = {
+                'email': email,
+                'password1': password1,
+                'password2': password2
+            };
+
+            $.ajax({
+                cache: false,
+                type: 'POST',
+                url: '/user/register/',
+                data: data,
+                async: true,
+                success: function (response) {
+                    if(response.msg === 'ok'){
+                        tips('注册成功，页面即将跳转~', 'success');
+                        setTimeout(function () {
+                            window.location.href = '/user/login/';
+                        }, 1500);
+                        return true;
+                    }
+
+                    if (response.msg === 'ko'){
+                        tips('注册失败，请重新检查邮箱和密码，稍后再试一次吧。', 'danger');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                        return false;
+                    }
+
+                    if (response.msg === 'exists'){
+                        tips('邮箱已经被注册。', 'danger');
+                        return false;
+                    }
+
+                    if (response.msg === 'mismatch'){
+                        tips('两次密码不一致。', 'danger');
+                        return false;
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

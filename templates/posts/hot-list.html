@@ -1,0 +1,6 @@
+<div class="list-group list-group-flush">
+    <!--posts是通过index.html文件在post_tags.py文件中查询到的4个热门帖子-->
+    {% for post in posts %}
+        {% include 'posts/host-item.html' with post=post %}
+    {% endfor %}
+</div>

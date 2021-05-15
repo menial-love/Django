@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+
+{% load review_tags %}
+
+
+{% block title %}
+    评论详情
+{% endblock %}
+
+
+{% block content %}
+    <div class="row mb-5">
+        <div class="col-md-10 offset-md-1">
+            <h6 class="border-bottom border-gray pb-2">
+                <a class="card-link" href="{{ review.post.get_absolute_url }}#reviews">查看帖子</a>
+                <span> / 评论详情</span>
+            </h6>
+
+            <div class="review-{{ review.id }} mt-4">
+                <div class="user-info m-auto text-muted">
+                    <img class="user-avatar-nav rounded" src="{{ review.user.avatar.url }}" alt="avatar">
+                    <a href="{{ review.user.get_absolute_url }}">
+                        <span class="ml-1 mr-2">{{ review.user }}</span>
+                    </a>
+
+                    <span class="mr-2">{{ review.created }}</span>
+                    {% if request.user.is_authenticated %}
+                        {% check_is_like_review review.id request.user as is_like_review %}
+                        {% if is_like_review %}
+                            <a href="javascript:void(0)"
+                               data-rid="{{ review.id }}"
+                               data-ctg="review"
+                               data-action="unlike"
+                               class="card-link badge badge-light text-danger like-review">
+                                <span class="like-thumbs">
+                                    <i class="fa fa-thumbs-up" aria-hidden="true"></i>
+                                </span>
+                                <span class="like-count">
+                                    {{ review.like_count }}
+                                </span>
+                            </a>
+                        {% else %}
+                            <a href="javascript:void(0)"
+                               data-rid="{{ review.id }}"
+                               data-ctg="review"
+                               data-action="like"
+                               class="card-link badge badge-light text-muted like-review">
+                                <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                                <span class="like-count">
+                                    {{ review.like_count }}
+                                </span>
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="review-info">
+                    <div class="review-content ml-4 mt-1">
+                        <span class="text-muted">
+                            {{ review.content }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="reply-form ml-4">
+                <div class="form-group ml-1">
+                    <label for="parent-reply-text" class="text-muted">
+                    </label>
+                    <textarea class="form-control bg-light" placeholder="写下你的回复..." rows="3" id="parent-reply-text"></textarea>
+                </div>
+                {% if request.user.is_authenticated %}
+                    <div class="mt-2">
+                         <button id="parent-btn-reply" data-rid="{{ review.id }}" data-pid="0" class="btn btn-sm btn-outline-success float-right">
+                             发表回复
+                         </button>
+                     </div>
+                {% else %}
+                    <div class="mt-2">
+                         <a role="button" target="_blank" href="{% url 'users:user-login' %}" class="btn btn-sm btn-outline-success float-right">
+                             登录后回复
+                         </a>
+                     </div>
+                {% endif %}
+
+            </div>
+
+            <h6 class="border-bottom border-gray pb-2 mt-5">
+                <strong>
+                    <span class="review-count">
+                        {{ review.get_reply_count }} 条回复
+                    </span>
+                </strong>
+            </h6>
+
+            <div class="reply-list">
+                {% include 'reviews/reply-list.html' with replies=replies %}
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="reply-modal" tabindex="-1" role="dialog"  aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalTitle"></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+                <label for="modal-reply-text" class="text-muted">
+                </label>
+                <textarea class="form-control bg-light" placeholder="写下你的回复..." rows="3" id="modal-reply-text"></textarea>
+            </div>
+
+             <div class="mt-2">
+                 <button id="modal-btn-reply" data-pid="" data-rid="{{ review.id }}" class="btn btn-outline-success float-right">
+                     发表回复
+                 </button>
+             </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+{% endblock %}
+
+
+{% block js %}
+    <script type="text/javascript">
+        $('#reply-modal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var title = button.data('title');
+            var pid = button.data('pid');
+            var modal = $(this);
+            var submitSignInBtn = modal.find('.modal-body button');
+
+            modal.find('.modal-title').text(title);
+            submitSignInBtn.data('pid', pid);
+        });
+
+        $('button#modal-btn-reply').click(function () {
+            var $this = $(this);
+            var rid = $this.data('rid');
+            var pid = $this.data('pid');
+            console.log(rid);
+            console.log(pid);
+            var replyText = $.trim($('textarea#modal-reply-text').val());
+
+            if (replyText === '') {
+                tips('回复内容不能为空~', 'danger');
+                return false;
+            }
+
+            var data = {
+              'rid': rid,
+              'pid': pid,
+              'text': replyText
+            };
+
+            $.ajax({
+                cache: false,
+                type: 'POST',
+                url: '/review/add/reply/',
+                data: data,
+                async: true,
+                success: function (response) {
+                    if (response.msg === 'ok'){
+                        tips('回复成功~', 'success');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                        return true;
+                    } else {
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                        tips('回复失败, 请稍后重试', 'danger');
+                        return false;
+                    }
+                }
+            });
+        });
+
+        $('button#parent-btn-reply').click(function () {
+            var $this = $(this);
+            var rid = $this.data('rid');
+            var pid = $this.data('pid');
+            var replyText = $.trim($('textarea#parent-reply-text').val());
+
+            if (replyText === '') {
+                tips('回复内容不能为空~', 'danger');
+                return false;
+            }
+
+            var data = {
+              'rid': rid,
+              'pid': pid,
+              'text': replyText
+            };
+            console.log(rid);
+            $.ajax({
+                cache: false,
+                type: 'POST',
+                url: '/review/add/reply/',
+                data: data,
+                async: true,
+                success: function (response) {
+                    if (response.msg === 'ok'){
+                        tips('回复成功~', 'success');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                        return true;
+                    } else {
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                        tips('回复失败, 请稍后重试', 'danger');
+                        return false;
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

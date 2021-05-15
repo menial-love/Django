@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% load post_tags %}
+{% load user_tags %}
+
+
+{% block title %}
+    首页
+{% endblock %}
+
+
+<!--父模板base.html中定义的content块，这里在index子模板中对其进行重写（其实是填充），因为父模板里没东西-->
+{% block content %}
+    <div class="row">
+        <div class="col-md-9">
+            <!--所有的动态生成网页都是配合django自定义标签templatetags加include with完成的-->
+            {% get_all_posts as posts %}
+            {% include 'posts/list.html' with posts=posts %}
+        </div>
+        <div class="col-md-3">
+            <h6 class="border-bottom border-gray pb-2">最新加入</h6>
+            {% get_online_users as online_users %}
+            {% include 'users/list.html' with users=online_users %}
+            <small class="d-block text-right mt-2">
+                <!-- path('list/', UserList.as_view(), name='user-list')-->
+                <!--在urls.py文件中定义name属性（注意''）可以放在模板中url标签动态生成url-->
+                <!--因为使用了路由分发，users指定了在哪个app下-->
+              <a href="{% url 'users:user-list' %}">全部用户</a>
+            </small>
+            <h6 class="border-bottom border-gray pb-2 mt-3">热门帖子</h6>
+            {% get_hot_posts as hot_posts %}
+            <!--include标签允许在模板中包含其它的模板的内容-->
+            <!--如果要在导入变量的时候传递参数，使用with的方法-->
+            <!--将host_posts作为posts传递到hot-list.html文件中-->
+            {% include 'posts/hot-list.html' with posts=hot_posts %}
+
+
+        </div>
+    </div>
+
+{% endblock %}

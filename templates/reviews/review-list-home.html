@@ -1,0 +1,5 @@
+<div class="list-group list-group-flush">
+    {% for review in reviews %}
+        {% include 'reviews/review-item-home.html' with review=review %}
+    {% endfor %}
+</div>

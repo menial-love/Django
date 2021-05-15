@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    注册
+{% endblock %}
+
+
+{% block content %}
+<div class="weather rain" style="height:1000px; width:100%">
+    <div class="row">
+        <div class="col-md-4 offset-md-4 p-5">
+            <h5 class="mb-5 text-red">用户登录</h5>
+            <label for="email">用户名/邮箱</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" >
+                    <i class="fa fa fa-user" aria-hidden="true"></i>
+                </span>
+              </div>
+              <input type="text" id="username" class="form-control" placeholder="用户名/邮箱">
+            </div>
+
+            <label for="password1">登录密码</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                    <i class="fa fa-lock" aria-hidden="true"></i>
+                </span>
+              </div>
+              <input type="password" id="password" class="form-control" placeholder="密码" >
+            </div>
+
+
+            <button type="button" id="login" class="btn btn-outline-success btn-sm btn-block mt-5">
+                确认登录
+            </button>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+
+{% block js %}
+    <script type="text/javascript">
+        $('button#login').click(function () {
+
+            var username = $.trim($('input#username').val());
+            var password = $.trim($('input#password').val());
+
+
+            if (username === '' || password === ''){
+                tips('邮箱、密码、都不能为空', 'danger');
+                return false;
+            }
+
+            var data = {
+                'username': username,
+                'password': password
+            };
+            <!--ajax以post方式将数据发送给视图函数，因为ajax方法中的url，即将数据提交给/user/login页面-->
+            $.ajax({
+                cache: false,
+                type: 'POST',
+                url: '/user/login/',
+                data: data,
+                async: true,
+                success: function (response) {
+                    if(response.msg === 'ok'){
+                        tips('登录成功，页面即将跳转~', 'success');
+                        setTimeout(function () {
+                            window.location.href = '/';  <!--重定向-->
+                        }, 1500);
+                        return true;
+                    }
+
+                    if (response.msg === 'ko'){
+                        tips('登录失败，请重新检查邮箱和密码，再试一次吧。', 'danger');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                        return false;
+                    }
+
+                }
+            });
+        });
+    </script>
+{% endblock %}

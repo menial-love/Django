@@ -1,0 +1,85 @@
+{% load staticfiles %}
+
+<li class="list-group-item mt-1 border border-top-0 border-right-0 border-left-0">
+    <div class="post-{{ post.id }}">
+        <div class="user-info m-auto text-muted">
+            <img class="user-avatar-nav rounded" src="{{ post.user.avatar.url }}" alt="avatar">
+            <a href="{{ post.user.get_absolute_url }}">
+                <span class="ml-1 mr-2">{{ post.user }}</span>
+            </a>
+            <span class="">{{ post.created }}</span>
+            {% if request.user.is_authenticated %}
+
+                <!--管理员的帖子置顶功能-->
+                {% if request.user.is_staff %}
+                    {% if post.is_sticky %}
+                        <a href="javascript:void(0)" data-pid="{{ post.id }}" data-action="unsticky"
+                           class="text-red card-link badge badge-light float-right sticky-post">已顶置</a>
+                    {% else %}
+                        <a href="javascript:void(0)" data-pid="{{ post.id }}" data-action="sticky"
+                           class="text-muted card-link badge badge-light float-right sticky-post">顶置</a>
+                    {% endif %}
+                {% endif %}
+                
+            {% else %}
+                {% if post.is_sticky %}
+                    <span data-pid="{{ post.id }}" data-action="sticky"
+                       class="text-red card-link badge badge-light float-right sticky-post">已顶置</span>
+                {% endif %}
+                
+            {% endif %}
+        </div>
+        <div class="post-info">
+            <!--d-flex弹性布局-->
+            <div class="d-flex">
+                <!--text-truncate 文本截断-->
+                {% if post.cover_image %}
+                <div class="mt-2">
+                    <img class="img-responsive rounded" style="height: 209px; width: 314px" src="{{ post.cover_image.url }}" alt="">
+                    <div style="position:absolute; margin-left:334px;bottom:225px;min-width:163px">
+                        <h5 class="mt-2 mb-2 text-dark">
+                        <!--帖子的url-->
+                            <a href="{{ post.get_absolute_url }}" class="text-dark">
+                                <strong> {{ post.title }}</strong>
+                            </a>
+                        </h5>
+                    </div>
+                </div>
+                <div class="text-truncate" style="margin-top:50px; margin-left:20px;">
+                    <span class="text-muted"> {{ post.content }} </span>
+                </div>
+                {% else %}
+                <div class="mt-2">
+                    <div>
+                        <h5 class="mt-2 mb-2 text-dark">
+                        <!--帖子的url-->
+                            <a href="{{ post.get_absolute_url }}" class="text-dark">
+                                <strong> {{ post.title }}</strong>
+                            </a>
+                        </h5>
+                    </div>
+                    <div class="text-truncate">
+                        <span class="text-muted"> {{ post.content }} </span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+        <div class="post-meta mt-2 mb-2">
+            {% if post.topic %}
+                <a href="{{ post.topic.get_absolute_url }}" class="text-red card-link badge badge-light">{{ post.topic }}</a>
+            {% endif %}
+            <a class="card-link  badge badge-light text-muted">
+                <i class="fa fa-eye" aria-hidden="true"></i> {{ post.view_count }}
+            </a>
+            <a class="card-link badge badge-light text-muted">
+                <i class="fa fa-comment-o" aria-hidden="true"></i> {{ post.get_review_count }}
+            </a>
+            <a class="card-link badge badge-light text-muted">
+                <i class="fa fa-thumbs-o-up" aria-hidden="true"></i> {{ post.like_count }}
+            </a>
+        </div>
+    </div>
+</li>
+

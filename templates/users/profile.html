@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+
+{% block title %}
+    编辑资料
+{% endblock %}
+
+
+{% block content %}
+    <div class="row mb-5">
+        <div class="col-md-10 offset-md-1">
+            <h6 class="border-bottom border-gray pb-2">
+                <a class="card-link" href="{{ user.get_absolute_url }}">个人主页</a>
+                <span> / 编辑资料</span>
+            </h6>
+            <div class="mt-2">
+                <p>当前头像:</p>
+                <img class="user-avatar-post rounded mb-4" src="{{ user.avatar.url }}" alt="">
+
+                <form method="POST"
+                      enctype="multipart/form-data" action="{% url 'users:edit-profile' user.id %}">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="submit" id="submit" name="submit"
+                       class="btn btn-outline-success float-right mt-3" value="确认发布">
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+{% endblock %}
+
+
+{% block js %}
+    <script type="text/javascript">
+      {% ifequal msg 'ko' %}
+        tips('好气啊，提交失败啦', 'danger');
+      {% endifequal %}
+    </script>
+{% endblock %}

@@ -1,0 +1,6 @@
+<div class="list-group list-group-flush">
+    <!---->
+    {% for post in posts %}
+        {% include 'posts/item.html' with post=post %}
+    {% endfor %}
+</div>

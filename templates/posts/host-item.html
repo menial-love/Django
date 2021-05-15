@@ -1,0 +1,39 @@
+{% load staticfiles %}
+
+<li href="#" class="list-group-item mt-1 border border-top-0 border-right-0 border-left-0">
+    <div class="post-{{ post.id }}">
+        <div class="user-info m-auto text-muted">
+            <img class="user-avatar rounded" src="{{ post.user.avatar.url }}" alt="avatar">
+            <a href="{{ post.get_absolute_url }}">
+                <span class="ml-1 mr-2 mt">{{ post.user }}</span>
+            </a>
+        </div>
+        <div class="post-info">
+            <div class="d-flex">
+                <div class="post-content text-truncate">
+                    <h6 class="mt-2 mb-2 text-truncate">
+                        <a href="{{ post.get_absolute_url }}" class="text-dark">
+                            <strong>{{ post.title }}</strong>
+                        </a>
+                    </h6>
+                </div>
+            </div>
+        </div>
+       <div class="post-meta mt-1 mb-2 small">
+            {% if post.topic %}
+                <a href="{{ post.topic.get_absolute_url }}" class="text-red card-link badge badge-light">{{ post.topic }}</a>
+            {% endif %}
+            <a class="card-link  badge badge-light text-muted">
+                <i class="fa fa-eye" aria-hidden="true"></i> {{ post.view_count}}
+            </a>
+            <a class="card-link badge badge-light text-muted">
+                <!--Django模板中{{varible}}包含的变量可以是视图传递给它的字典的key字段-->
+                <!--可以是模型中一个实例对象的属性和方法-->
+                <i class="fa fa-comment-o" aria-hidden="true"></i> {{ post.get_review_count }}
+            </a>
+            <a class="card-link badge badge-light text-muted">
+                <i class="fa fa-thumbs-o-up" aria-hidden="true"></i> {{ post.like_count }}
+            </a>
+        </div>
+    </div>
+</li>

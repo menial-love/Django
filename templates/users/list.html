@@ -1,0 +1,5 @@
+<div class="list-group list-group-flush">
+    {% for user in users %}
+        {% include 'users/item.html' with users=users %}
+    {% endfor %}
+</div>

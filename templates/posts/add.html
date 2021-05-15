@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+
+{% block title %}
+    发布帖子
+{% endblock %}
+
+
+{% block content %}
+    <div class="row mb-5">
+        <div class="col-md-10 offset-md-1">
+            <div class="mt-2">
+                <!--必须有enctype=“multipart/form-data”-->
+                <form method="POST"
+                      enctype="multipart/form-data" action="{% url 'posts:add-post' %}">
+                    {% csrf_token %}
+                    {{ form.as_p }} <!--通过form对象的as_p方法在前端渲染成p标签的形式-->
+                    <p><label for="ClubImagesUpload" id="submit_image">添加图片(可选项):
+                        <input type="file" accept="image/*" name="post_img_files"
+                               id="ClubImagesUpload" style="display:none" multiple="multiple">
+                        <img src="https://img1.baidu.com/it/u=2294168426,2339550354&fm=26&fmt=auto&gp=0.jpg"
+                             class="addImg mt-2" style="display:block"
+                        height="80px" width="80px"/>
+                        </label></p>
+                    <input type="submit" id="submit" name="submit"
+                       class="btn btn-outline-success float-right mt-3" value="确认发布">
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+{% endblock %}
+
+
+{% block js %}
+    <script type="text/javascript">
+      {% ifequal msg 'ko' %}
+        tips('好气啊，提交失败啦', 'danger');
+      {% endifequal %}
+
+
+    </script>
+{% endblock %}

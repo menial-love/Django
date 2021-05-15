@@ -1,0 +1,5 @@
+<div class="list-group list-group-flush">
+    {% for reply in replies %}
+        {% include 'reviews/reply-item.html' with reply=reply %}
+    {% endfor %}
+</div>

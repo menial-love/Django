@@ -1,0 +1,67 @@
+{% load staticfiles %}
+{% load review_tags %}
+
+<li class="list-group-item mt-1 border border-top-0 border-right-0 border-left-0">
+    <div class="reply-{{ reply.id }}">
+        <div class="user-info m-auto text-muted">
+            <img class="user-avatar-nav rounded" src="{{ reply.user.avatar.url }}" alt="avatar">
+            <a href="{{ reply.user.get_absolute_url }}">
+                <span class="ml-1 mr-2 mt">{{ reply.user }}</span>
+            </a>
+            <span class="">{{ reply.created }}</span>
+        </div>
+        <div class="reply-info">
+            <div class="reply-content ml-4 mt-1">
+                <span class="text-muted">
+                    {{ reply.content }}
+                    {% if reply.parent %}
+                        //<a href="{{ reply.parent.user.get_absolute_url }}">@{{ reply.parent.user }}</a>: {{ reply.parent.content }}
+                    {% endif %}
+                </span>
+            </div>
+            {% if request.user.is_authenticated %}
+                <div class="reply-meta mt-1 ml-4">
+                    <span class="text-muted">
+                        {% check_is_like_reply reply.id user as is_like_reply %}
+                        {% if is_like_reply %}
+                            <a href="javascript:void(0)"
+                               data-rid="{{ reply.id }}"
+                               data-ctg="reply"
+                               data-action="unlike"
+                               class="card-link badge badge-light text-danger like-review">
+                                <span class="like-thumbs">
+                                    <i class="fa fa-thumbs-up" aria-hidden="true"></i>
+                                </span>
+                                <span class="like-count">
+                                    {{ reply.like_count }}
+                                </span>
+                            </a>
+                        {% else %}
+                            <a href="javascript:void(0)"
+                               data-rid="{{ reply.id }}"
+                               data-ctg="reply"
+                               data-action="like"
+                               class="card-link badge badge-light text-muted like-review">
+                                <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                                <span class="like-count">
+                                    {{ reply.like_count }}
+                                </span>
+                            </a>
+                        {% endif %}
+                        <a href="javascript:void(0)" data-pid="{{ reply.id }}" data-title="@{{ reply.user }}"
+                           data-toggle="modal"  data-target="#reply-modal"
+                           class="card-link badge badge-light text-muted">
+                            <i class="fa fa-comment-o" aria-hidden="true"></i>
+                            {% if reply.get_reply_count %}
+                                {{ reply.get_reply_count }} 条回复
+                            {% else %}
+                                回复
+                            {% endif %}
+                        </a>
+                    </span>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+</li>
