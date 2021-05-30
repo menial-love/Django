@@ -1,8 +1,9 @@
-{% load staticfiles %}
+{% load static %}
 
 {% load review_tags %}
 
-<li class="list-group-item mt-1 border-0">
+<li class="list-group-item mt-1 border"
+style="box-shadow: 2px 2px 2px 2px rgba(0,0,0,0.23);border-radius: 5px;">
     <div class="review-{{ review.id }}">
         <div class="user-info m-auto text-muted">
             <img class="user-avatar-nav rounded" src="{{ review.user.avatar.url }}" alt="avatar">

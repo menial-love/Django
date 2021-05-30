@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+# os.path.abspath是settings.py的绝对路径,一层dirname为bss_demo,二层dirname为文件根目录，与manage.Py同级
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -25,7 +26,7 @@ SECRET_KEY = '&f-$wqpy%o9$=#=55--$ax-=8b$yc%@f)ic3mdet$4oq4os5-v'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["1.15.12.140"]
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -131,19 +132,22 @@ STATICFILES_DIRS = [
 ]
 
 # my settings
-AUTH_USER_MODEL = 'users.UserProfile'
+# AuTH_USER_MODEL = 'auth.User'
+AUTH_USER_MODEL = 'users.UserProfile'   # 自定义用户模型类，修改系统默认指向的模型类
 
 LOGIN_URL = '/user/login/'
 
-# 设置上传文件的路径
+# 配置上传文件的路径
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media').replace("\\",'/')
+
 
 # 增加邮箱登入
 AUTHENTICATION_BACKENDS = (
     'users.views.CustomBackend',
 )
 
+SESSION_COOKIE_AGE = 60*10  # 设置session的过期时间，这里为10分钟
+SESSION_SAVE_EVERY_REQUEST = True
 
-
-# TEMPLATE_DIRS = (os.path.join(BASE_DIR,  'templates'),)
+# TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'),)

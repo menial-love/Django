@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load staticfiles %}
+{% load static %}
 {% block title %}
     个人主页
 {% endblock %}
@@ -40,7 +40,7 @@
 
             {% ifequal user request.user %}
                 <div class="mt-3">
-                    <a target="_blank" href="{% url 'users:edit-profile' user.id %}" class="btn btn-sm btn-outline-success btn-block">
+                    <a target="_blank" href="{% url 'users:edit-profile' user.id %}" class="btn btn-sm btn-outline-danger btn-block">
                         编辑资料
                     </a>
                 </div>

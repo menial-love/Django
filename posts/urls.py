@@ -6,7 +6,7 @@
 from django.urls import path
 
 from . import views
-from .views import PostDetail, LikePost, AddPost, TopicDetail, StickyPost,DeletePost
+from posts.views import PostDetail, LikePost, AddPost, TopicDetail, StickyPost,DeletePost
 
 app_name = 'posts'
 

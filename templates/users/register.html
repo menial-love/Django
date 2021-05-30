@@ -8,7 +8,8 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-md-4 offset-md-4 p-5">
+        <div class="col-md-4 offset-md-4 p-5 bound" style="background-color: white;
+box-shadow: 4px 4px 6px 2px rgba(0,0,0,0.23);border-radius: 8px;">
             <h5 class="mb-5 text-red">欢迎注册新用户</h5>
             <label for="email">邮箱注册</label>
             <div class="input-group mb-3">
@@ -68,6 +69,11 @@
                 return false;
             }
 
+            var ispasswd = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$/;
+            if(!(ispasswd.test(password1))){
+                tips('密码只能是6-20位的字母数字的组合~', 'danger');
+                return false;
+            }
 
             var data = {
                 'email': email,

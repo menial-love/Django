@@ -68,7 +68,10 @@ class UserLogin(View):
     用户登录视图
     """
     def get(self, request):
-        return render(request, 'users/login.html')
+        current_page = 'login'
+        return render(request, 'users/login.html', {
+            'current_page': current_page,
+        })
 
     def post(self, request):
         if request.is_ajax():
@@ -76,8 +79,10 @@ class UserLogin(View):
             password = request.POST.get('password', None)
             if username and password:
                 user = authenticate(username=username, password=password)
+                # 设置session的过期时间，这里参数0表示关闭浏览器session即过期
+                request.session.set_expiry(0)
                 if user is not None:
-                    login(request, user)
+                    login(request, user) # login方法会将user放到request中，在前端可使用request.user
                     return JsonResponse({'msg': 'ok'})
         return JsonResponse({'msg': 'ko'})
 
@@ -100,7 +105,9 @@ class UserHome(View):
         posts = user.user_posts.all()
         reviews = user.user_reviews.all()
         replies = user.user_replies.all()
+        current_page = "Home"
         return render(request, 'users/home.html', {
+            'current_page': current_page,
             'user': user,
             'posts': posts,
             'reviews': reviews,

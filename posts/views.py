@@ -19,7 +19,7 @@ class PostDetail(View):
         post.view_count += 1
         post.save()
         reviews = post.get_review_list()
-        photos = post.post_photos.all()   # 查找帖子所有图片传递给模板
+        photos = post.post_photos.all()   # 查找帖子所有图片传递给页面
         return render(request, 'posts/detail.html', {
             'post': post,
             'photos': photos,
@@ -36,14 +36,17 @@ class LikePost(LoginRequiredMixin, View):
         action = request.POST.get('action', None)
         if request.is_ajax() and post_id and action:
             try:
-                post = Post.objects.get(id=int(post_id))
+                post = get_object_or_404(Post, id=int(post_id))
                 if action == 'like':
                     post.like_users.add(request.user)
+                    post.like_count += 1
                 else:
                     post.like_users.remove(request.user)
+                    post.like_count -= 1
+                post.save()
                 return JsonResponse({'msg': 'ok'})
-            except Post.DoesNotExist:
-                return JsonResponse({'msg': 'ko'})
+            except BaseException as e:
+                print(e)
         return JsonResponse({'msg': 'ko'})
 
 
@@ -72,7 +75,7 @@ class AddPost(LoginRequiredMixin, View):
                     new_photo.absolute_url = media_url
                     new_photo.pic = file.name
                     new_photo.save()
-                    destination = open('C:/F/python django bbs/bss_demo/media/image/post/content/' + file.name, 'wb+')
+                    destination = open('/home/ubuntu/mysite/Django/media/image/post/content/' + file.name, 'wb+')
                     for chunk in file.chunks():
                         destination.write(chunk)
                     destination.close()
@@ -92,7 +95,6 @@ class DeletePost(View):
     删除帖子
     """
     def post(self, request, post_id):
-
         post1 = get_object_or_404(Post, id=int(post_id))
         user = post1.user
         post1.delete()
@@ -109,9 +111,10 @@ class TopicDetail(View):
         topic = get_object_or_404(Topic, id=int(topic_id)) # 查询语句根据id查找板块名
         # 由于一个板块对应多个帖子属于一对多的关系，故在models.py中使用related_name
         # 在定义主表的外键的时候，给这个外键定义好一个名称
-        # topic是板块
         posts = topic.topic_posts.order_by('-is_sticky')
+        current_page = 'Topic'
         return render(request, 'posts/topic-detail.html', {
+            'current_page': current_page,
             'topic': topic,
             'posts': posts,  # 将这些参数放在字典中使用render函数传递给模板
             'topic_id': topic.id

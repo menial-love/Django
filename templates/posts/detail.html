@@ -66,14 +66,14 @@
                 </div>
             </div>
             <div class="post-info mt-3">
-                <span class="d-flex" style="font-size:20px">
-                    {{ post.content }}
+                <span style="font-size:20px">
+                    {{ post.content|linebreaks }}
                 </span>
             </div>
             <div class="row">
                 {% if photos %}
                     {% for photo in photos %}
-                    <div class="col-4 mt-2">
+                    <div class="col-4 mt-2" style="min-width:240px">
                         <img src="{{ photo.absolute_url }}" width="240px" height="240px" />
                     </div>
                     {% endfor %}
@@ -137,7 +137,7 @@
             var $this = $(this);
             var postId = $this.data('pid');
             var action = $this.data('action');
-            var likeCount = parseInt($this.find('span.like-count').text());
+            var likeCount = parseInt($('span.like-count').text());
             var data = {
                 'postId': postId,
                 'action': action
@@ -151,21 +151,20 @@
                 success: function (response) {
                     if (response.msg === 'ok'){
                         $this.data('action', action === 'like' ? 'unlike' : 'like');
-                        if (action === 'like'){
+                        if (action === 'like') {
                             $this.removeClass('btn-outline-secondary');
                             $this.addClass('btn-outline-danger');
-                            $this.find('span.like-thumbs').html('<i class="fa fa-thumbs-up" aria-hidden="true"></i>');
-                            $this.find('span.like-text').text('已点赞');
-                            $this.find('span.like-count').text(likeCount + 1);
-                            tips('+1', 'success');
+                            $('span.like-thumbs').html('<i class="fa fa-thumbs-up" aria-hidden="true"></i>');
+                            $('span.like-text').text('已点赞');
+                            $('span.like-count').text(likeCount + 1);
                         } else {
                             $this.removeClass('btn-outline-danger');
                             $this.addClass('btn-outline-secondary');
-                            $this.find('span.like-thumbs').html('<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>');
-                            $this.find('span.like-text').text('点赞');
-                            $this.find('span.like-count').text(likeCount - 1);
+                            $('span.like-thumbs').html('<i class="fa fa-thumbs-o-up" aria-hidden="true"></i>');
+                            $('span.like-text').text('点赞');
+                            $('span.like-count').text(likeCount - 1);
                         }
-                        $('span.like-count-text').text($this.find('span.like-count').text());
+                        $('span.like-count-text').text($('span.like-count').text());
                     }
                 }
             });

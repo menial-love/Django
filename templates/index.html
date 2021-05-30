@@ -22,10 +22,8 @@
             {% get_online_users as online_users %}
             {% include 'users/list.html' with users=online_users %}
             <small class="d-block text-right mt-2">
-                <!-- path('list/', UserList.as_view(), name='user-list')-->
-                <!--在urls.py文件中定义name属性（注意''）可以放在模板中url标签动态生成url-->
-                <!--因为使用了路由分发，users指定了在哪个app下-->
-              <a href="{% url 'users:user-list' %}">全部用户</a>
+                <!--由于使用了路由分发，users指定了在哪个app下-->
+                <a href="{% url 'users:user-list' %}" style="color:black">全部用户</a>
             </small>
             <h6 class="border-bottom border-gray pb-2 mt-3">热门帖子</h6>
             {% get_hot_posts as hot_posts %}
@@ -33,9 +31,6 @@
             <!--如果要在导入变量的时候传递参数，使用with的方法-->
             <!--将host_posts作为posts传递到hot-list.html文件中-->
             {% include 'posts/hot-list.html' with posts=hot_posts %}
-
-
         </div>
     </div>
-
 {% endblock %}

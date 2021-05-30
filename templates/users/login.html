@@ -2,14 +2,15 @@
 
 
 {% block title %}
-    注册
+    登录
 {% endblock %}
 
 
 {% block content %}
-<div class="weather rain" style="height:1000px; width:100%">
+
     <div class="row">
-        <div class="col-md-4 offset-md-4 p-5">
+        <div class="col-md-4 offset-md-4 p-5 bound" style="background-color: white;
+box-shadow: 4px 4px 6px 2px rgba(0,0,0,0.23);border-radius: 8px;">
             <h5 class="mb-5 text-red">用户登录</h5>
             <label for="email">用户名/邮箱</label>
             <div class="input-group mb-3">
@@ -38,7 +39,6 @@
         </div>
 
     </div>
-</div>
 {% endblock %}
 
 
@@ -59,7 +59,6 @@
                 'username': username,
                 'password': password
             };
-            <!--ajax以post方式将数据发送给视图函数，因为ajax方法中的url，即将数据提交给/user/login页面-->
             $.ajax({
                 cache: false,
                 type: 'POST',
@@ -67,7 +66,7 @@
                 data: data,
                 async: true,
                 success: function (response) {
-                    if(response.msg === 'ok'){
+                    if(response.msg === 'ok') {
                         tips('登录成功，页面即将跳转~', 'success');
                         setTimeout(function () {
                             window.location.href = '/';  <!--重定向-->

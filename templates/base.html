@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 {% load static %}
-{% load staticfiles %}
 <!--加载posts app的templatetags自定义模板标签文件以在模板中使用自定义标签-->
 {% load post_tags %}
 <html lang="zh-cn">
@@ -13,14 +12,42 @@
         <link href="{% static 'css/font-awesome.min.css' %}" rel='stylesheet'>
         <link href="{% static 'css/animate.min.css' %}" rel='stylesheet'>
     	<link rel="stylesheet" href="{% static 'css/app.css' %}" />
-
         <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/layer/layer.js' %}"></script>
+        <style>
+            {% ifequal 'index' current_page %}
+                #b {
+                    background:url('https://images4.alphacoders.com/876/876898.jpg') center center no-repeat;
+                }
+            {% endifequal %}
+            {% ifequal 'Topic' current_page %}
+                #b {
+                    background:url('https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic1.win4000.com%2Fwallpaper%2Fd%2F55dae5b338898.jpg&refer=http%3A%2F%2Fpic1.win4000.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1624718800&t=8750f14671aaa70e1dadb9c37df47732') center center no-repeat;
+                }
+            {% endifequal %}
+            {% ifequal 'Home' current_page %}
+                #b {
+                    background:url('https://images4.alphacoders.com/876/876898.jpg') center center no-repeat;
+                }
+            {% endifequal %}
+            {% ifequal 'register' current_page %}
+                #b {
+                    height:610px;
+                    background:url('https://pages.anjukestatic.com/usersite/site/img/PlugLogin/bg.jpg') center center no-repeat;
+                }
+            {% endifequal %}
+            {% ifequal 'login' current_page %}
+                #b {
+                    height:610px;
+                    background:url('https://pages.anjukestatic.com/usersite/site/img/PlugLogin/bg.jpg') center center no-repeat;
+                }
+            {% endifequal %}
+        </style>
         {% block css %}
 
         {% endblock %}
 	</head>
-	<body>
+	<body id="b">
 		<nav class="navbar navbar-expand-xl navbar-light bg-white fixed-top border border-left-0 border-right-0 border-top-0 border-gery">
 
 			<div class="container">
@@ -45,7 +72,7 @@
                         {% get_topic_list as topics %}
                         {% for topic in topics %}
                             <li class="nav-item">
-                                <a class="nav-link"
+                                <a class="nav-link stopic_{{ topic.id }}"
                                    href="{{ topic.get_absolute_url }}">
                                     <!--topic.id是板块的id属性，topic_id是path中捕获的url变量-->
                                     <span class="{% ifequal topic.id topic_id %} text-red {% endifequal %}">
@@ -73,12 +100,12 @@
                                       <img class="user-avatar-nav rounded" src="{{ request.user.avatar.url }}" alt="avatar" />
                                   </a>
                                   <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                      <a  class="dropdown-item" href="{{ request.user.get_absolute_url }}"><i class="fa fa-user-o" aria-hidden="true"></i> 个人主页</a>
+                                      <a class="dropdown-item" href="{{ request.user.get_absolute_url }}"><i class="fa fa-user-o" aria-hidden="true"></i> 个人主页</a>
                                       <a href="javascript:void(0)" class="dropdown-item logout"><i class="fa fa-sign-out" aria-hidden="true"></i> 退出登录</a>
                                 </div>
                               </li>
                               <a href="{% url 'posts:add-post' %}"
-                                class="btn btn-outline-danger pt-2" target="_blank">
+                                class="send-post btn btn-outline-danger pt-2" target="_blank">
                                 <i class="fa fa-pencil" aria-hidden="true"></i> 发帖子
                               </a>
                               {% else %}
